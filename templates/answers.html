@@ -1,0 +1,15 @@
+<div>
+    <div>
+        <h2>Question {{ question_id }}</h2>
+
+        <ul>
+            {% for answer in question.answers %}
+            <li>
+                <button hx-post="/quiz/{{ quiz_id }}/question/{{ question_id }}/answer/{{ loop.index0 }}" hx-target="#response">{{ answer }}</button>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div id="response"></div>
+    </div>
+</div>
