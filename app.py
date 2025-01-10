@@ -1,12 +1,11 @@
 import random
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, redirect, url_for
 
 app = Flask(__name__)
 
 # Sample data for quizzes and questions
 quizzes = {
     0: {
-        'title': 'Phrase Identification Quiz',
         'questions': {
             0: {
                 'question_id': 0,
@@ -31,12 +30,6 @@ quizzes = {
         }
     }
 }
-
-def convert_nested_dict_to_object(d):
-    class ObjectView(object):
-        def __init__(self, d):
-            self.__dict__ = d
-    return ObjectView(d)
 
 @app.route('/')
 def home():
@@ -68,4 +61,4 @@ def submit_answer(quiz_id, question_id, answer_id):
     return redirect(url_for('show_question', quiz_id=quiz_id, question_id=next_question_id))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000)
