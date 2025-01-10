@@ -171,3 +171,5 @@ cython_debug/
 .pypirc
 
 .secrets
+.nhost
+functions/node_modules/
