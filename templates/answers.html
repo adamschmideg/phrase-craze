@@ -1,11 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Answers{% endblock %}
+
+{{ super() }}
+{% block content %}
 <div>
     <div>
-        <h2>Question {{ question_id }}</h2>
+        <h2>Question {{ question.id }}</h2>
 
         <ul>
-            {% for answer in question.answers %}
+            {% for answer in answers %}
             <li>
-                <button hx-post="/quiz/{{ quiz_id }}/question/{{ question_id }}/answer/{{ loop.index0 }}" hx-target="#response">{{ answer }}</button>
+                <button hx-post="/quiz/{{ quiz_id }}/question/{{ question.id }}/answer/{{ answer.answer_id }}" hx-target="#response">{{ answer.text }}</button>
             </li>
             {% endfor %}
         </ul>
@@ -13,3 +18,4 @@
         <div id="response"></div>
     </div>
 </div>
+{% endblock %}

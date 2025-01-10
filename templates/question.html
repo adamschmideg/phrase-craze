@@ -1,6 +1,12 @@
-<div>
-    <h2>Question {{ question_id }}</h2>
-    <p>{{ question.phrase }}</p>
+{% extends "base.html" %}
+{% block title %}{{ question.text }}{% endblock %}
 
-    <div id="response"></div>
+{{ super() }}
+{% block content %}
+<div>
+    <h2>Question {{ question.id }}</h2>
+    <p>{{ question.text }}</p>
+
+    <a href="{{ answers_url }}" >Answers</a>
 </div>
+{% endblock %}
