@@ -53,24 +53,19 @@ def show_question(quiz_id, question_id):
 def show_answers(quiz_id, question_id, answer_ids):
     question = quizzes[quiz_id]['questions'][question_id]
     answers = [question['answers'][int(i)] for i in answer_ids.split(',')]
-    return render_template('answers.html', question=question, answers=answers)
+    return render_template('answers.html', quiz_id=quiz_id, question_id=question_id, answers=answers)
 
 @app.route('/quiz/<int:quiz_id>/question/<int:question_id>/answer/<int:answer_id>', methods=['POST'])
 def submit_answer(quiz_id, question_id, answer_id):
-    # Here you would handle answer submission logic (e.g., scoring)
+    question = quizzes[quiz_id]['questions'][question_id]
+    answer = question['answers'][answer_id]
+    if answer['correct']:
+        # TODO: Score
+        pass
 
-    # Get all question IDs for the quiz
-    question_ids = list(quizzes[quiz_id]['questions'].keys())
-
-    # Remove current question ID from list to avoid repetition
-    question_ids.remove(question_id)
-
-    # Redirect to a random next question if available
-    if question_ids:
-        next_question_id = random.choice(question_ids)
-        return redirect(url_for('question', quiz_id=quiz_id, question_id=next_question_id))
-
-    return redirect(url_for('quiz', quiz_id=quiz_id))  # Redirect to quiz if no more questions
+    question_ids = quizzes[quiz_id]['questions'].keys()
+    next_question_id = random.randint(0, len(question_ids) - 1)
+    return redirect(url_for('show_question', quiz_id=quiz_id, question_id=next_question_id))
 
 if __name__ == '__main__':
     app.run(debug=True)

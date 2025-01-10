@@ -5,17 +5,22 @@
 {% block content %}
 <div>
     <div>
-        <h2>Question {{ question.id }}</h2>
+        <h2>Question {{ question_id }}</h2>
 
-        <ul>
-            {% for answer in answers %}
-            <li>
-                <button hx-post="/quiz/{{ quiz_id }}/question/{{ question.id }}/answer/{{ answer.answer_id }}" hx-target="#response">{{ answer.text }}</button>
-            </li>
-            {% endfor %}
-        </ul>
-
-        <div id="response"></div>
+        <form method="post">
+            <ul>
+                {% for answer in answers %}
+                <li>
+                    <button type="submit"
+                            name="answer"
+                            value="{{ loop.index0 }}"
+                            formaction="{{ url_for('submit_answer', quiz_id=quiz_id, question_id=question_id, answer_id=loop.index0) }}">
+                        {{ answer.text }}
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+        </form>
     </div>
 </div>
 {% endblock %}
