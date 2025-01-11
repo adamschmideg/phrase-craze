@@ -1,6 +1,8 @@
-query {
-    questions {
-        id
-        text
+
+query HasuraMetadata {
+    __type(name: "query_root") {
+        fields {
+            name
+        }
     }
 }

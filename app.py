@@ -1,5 +1,8 @@
 import random
+
+import requests
 from flask import Flask, render_template, redirect, url_for
+import json
 
 app = Flask(__name__)
 
@@ -31,6 +34,14 @@ quizzes = {
     }
 }
 
+# NHOST_GRAPHQL_URL = "http://localhost:1337/v1/graphql"
+NHOST_GRAPHQL_URL = "https://dcwflwgxasnoukkjqyvw.hasura.eu-central-1.nhost.run/v1/graphql"
+
+def load_query_from_file(query_name):
+    filename = f'queries/{query_name}.graphql'
+    with open(filename, 'r') as file:
+        return file.read()
+
 @app.route('/')
 def home():
     return redirect(url_for('show_question', quiz_id=0, question_id=0))
@@ -60,5 +71,13 @@ def submit_answer(quiz_id, question_id, answer_id):
     next_question_id = random.randint(0, len(question_ids) - 1)
     return redirect(url_for('show_question', quiz_id=quiz_id, question_id=next_question_id))
 
+def get_questions():
+    query = load_query_from_file("questions")
+    response = requests.post(NHOST_GRAPHQL_URL, json={'query': query})
+    data = response.json()
+    pretty_json = json.dumps(data, indent=2, sort_keys=True)
+    return pretty_json
+
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    print(get_questions())
+    # app.run(debug=True, port=8000)
