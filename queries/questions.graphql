@@ -1,0 +1,6 @@
+query {
+    questions {
+        id
+        text
+    }
+}
