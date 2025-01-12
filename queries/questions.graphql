@@ -1,8 +1,0 @@
-
-query HasuraMetadata {
-    __type(name: "query_root") {
-        fields {
-            name
-        }
-    }
-}
