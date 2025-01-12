@@ -7,15 +7,17 @@
         <h2>Question {{ question_id }}</h2>
 
         <form method="post">
+            {% csrf_token %}
             <ul>
                 {% for answer in answers %}
                 <li>
                     <button type="submit"
                             name="answer"
-                            value="{{ loop.index0 }}"
-                            formaction="{{ url_for('submit_answer', quiz_id=quiz_id, question_id=question_id, answer_id=loop.index0) }}">
+                            value="{{ forloop.counter0 }}"
+                            formaction="{% url 'submit_answer' quiz_id=quiz_id question_id=question_id answer_id=forloop.counter0 %}">
                         {{ answer.text }}
                     </button>
+
                 </li>
                 {% endfor %}
             </ul>
