@@ -1,7 +1,7 @@
-{% extends "base.html" %}
+{% extends "quiz/base.html" %}
 {% block title %}{{ question.text }}{% endblock %}
 
-{{ super() }}
+{{ super }}
 {% block content %}
 <div>
     <h2>Question {{ question.id }}</h2>
