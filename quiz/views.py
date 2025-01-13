@@ -2,9 +2,13 @@ import random
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from quiz import models
+from django.contrib.auth.models import User
 
 def home(request):
-    return redirect(reverse('show_question', kwargs={'quiz_id': 0, 'question_id': 0}))
+    user = request.user if request.user.is_authenticated else User.objects.get(username='placeholder')
+    status = models.Status.objects.get_or_create(user=user)[0]
+    question = models.Question.objects.random_for_status(status)
+    return redirect(reverse('show_question', kwargs={'quiz_id': 0, 'question_id': question.id}))
 
 def show_question(request, quiz_id, question_id):
     question = models.Question.objects.get(id=question_id)

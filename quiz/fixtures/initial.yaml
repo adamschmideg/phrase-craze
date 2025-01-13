@@ -27,3 +27,8 @@
     question_id: 0
     text: Om negen uur vertrekt de trein.
     is_correct: false
+
+- model: auth.user
+  pk: 0
+  fields:
+    username: placeholder
