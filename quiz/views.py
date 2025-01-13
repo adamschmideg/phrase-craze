@@ -13,8 +13,7 @@ def show_question(request, quiz_id, question_id):
     return render(request, 'quiz/question.html', {'question': question, 'answers_url': answers_url})
 
 def show_answers(request, quiz_id, question_id, answer_ids):
-    question = models.Question.objects.get(id=question_id)
-    answers = question.answers.all()
+    answers = models.Answer.objects.filter(id__in=answer_ids.split(','))
     return render(request, 'quiz/answers.html', {'quiz_id': quiz_id, 'question_id': question_id, 'answers': answers})
 
 def submit_answer(request, quiz_id, question_id, answer_id):
