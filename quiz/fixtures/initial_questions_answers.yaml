@@ -1,0 +1,29 @@
+- model: quiz.question
+  pk: 0
+  fields:
+    text: De trein vertrekt om negen uur.
+
+- model: quiz.answer
+  pk: 0
+  fields:
+    question_id: 0
+    text: De train vertrekt om zeven uur.
+    is_correct: false
+- model: quiz.answer
+  pk: 1
+  fields:
+    question_id: 0
+    text: De train vertrekt om negen uur.
+    is_correct: true
+- model: quiz.answer
+  pk: 2
+  fields:
+    question_id: 0
+    text: De bus vertrekt om negen uur.
+    is_correct: false
+- model: quiz.answer
+  pk: 3
+  fields:
+    question_id: 0
+    text: Om negen uur vertrekt de trein.
+    is_correct: false
