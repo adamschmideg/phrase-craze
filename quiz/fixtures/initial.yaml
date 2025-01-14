@@ -1,31 +1,69 @@
 - model: quiz.question
   pk: 0
   fields:
-    text: De trein vertrekt om negen uur.
-
+    text: De trein vertrekt om negen uur
+    difficulty: 6
 - model: quiz.answer
   pk: 0
   fields:
     question_id: 0
-    text: De train vertrekt om zeven uur.
+    text: De train vertrekt om zeven uur
+    difficulty: 6
     is_correct: false
 - model: quiz.answer
   pk: 1
   fields:
     question_id: 0
-    text: De train vertrekt om negen uur.
+    text: De train vertrekt om negen uur
+    difficulty: 6
     is_correct: true
 - model: quiz.answer
   pk: 2
   fields:
     question_id: 0
-    text: De bus vertrekt om negen uur.
+    text: De bus vertrekt om negen uur
+    difficulty: 6
     is_correct: false
 - model: quiz.answer
   pk: 3
   fields:
     question_id: 0
-    text: Om negen uur vertrekt de trein.
+    text: Om negen uur vertrekt de trein
+    difficulty: 6
+    is_correct: false
+
+- model: quiz.question
+  pk: 1
+  fields:
+    text: De zon schijnt door de wolken heen
+    difficulty: 7
+- model: quiz.answer
+  pk: 4
+  fields:
+    question_id: 1
+    text: De zon breekt door de wolken heen vandaag
+    difficulty: 6
+    is_correct: false
+- model: quiz.answer
+  pk: 5
+  fields:
+    question_id: 1
+    text: De zon schijnt door de wolken heen
+    difficulty: 6
+    is_correct: true
+- model: quiz.answer
+  pk: 6
+  fields:
+    question_id: 1
+    text: Door de wolken heen schijnt de zon fel
+    difficulty: 6
+    is_correct: false
+- model: quiz.answer
+  pk: 7
+  fields:
+    question_id: 1
+    text: De wolken verdwijnen en de zon schijnt.
+    difficulty: 6
     is_correct: false
 
 - model: auth.user

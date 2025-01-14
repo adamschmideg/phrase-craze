@@ -2,28 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from random import randint
 
-class StatusManager(models.Manager):
-    def get_or_create(self, user):
-        user = user if user.is_authenticated else User.objects.get(username='placeholder')
-        try:
-            return self.get(user=user)
-        except self.model.DoesNotExist:
-            return self.create(user=user)
-
-class Status(models.Model):
-    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    question_difficulty = models.IntegerField(default=1)
-    answer_difficulty = models.IntegerField(default=1)
-    matches_played = models.IntegerField(default=0)
-    matches_won = models.IntegerField(default=0)
-    matches_per_round = models.IntegerField(default=5)
-    objects = StatusManager()
-
-    def increase_difficulty(self):
-        pass
-
-    def decrease_difficulty(self):
-        pass
 
 class QuestionManager(models.Manager):
     def random_question(self, status):
@@ -46,3 +24,30 @@ class Answer(models.Model):
     text = models.TextField()
     is_correct = models.BooleanField(default=False)
     difficulty = models.IntegerField(default=1)
+
+class StatusManager(models.Manager):
+    def get_or_create(self, user):
+        user = user if user.is_authenticated else User.objects.get(username='placeholder')
+        try:
+            return self.get(user=user)
+        except self.model.DoesNotExist:
+            return self.create(user=user)
+
+class Status(models.Model):
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    question_difficulty = models.IntegerField(default=6)
+    answer_difficulty = models.IntegerField(default=6)
+    matches_played = models.IntegerField(default=0)
+    matches_won = models.IntegerField(default=0)
+    matches_per_round = models.IntegerField(default=2)
+    objects = StatusManager()
+
+    def increase_difficulty(self):
+        max_difficulty = Question.objects.aggregate(models.Max('difficulty'))['difficulty__max']
+        if self.question_difficulty < max_difficulty:
+            self.question_difficulty += 1
+
+    def decrease_difficulty(self):
+        min_difficulty = Question.objects.aggregate(models.Min('difficulty'))['difficulty__min']
+        if self.question_difficulty > min_difficulty:
+            self.question_difficulty -= 1
