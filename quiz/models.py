@@ -15,7 +15,7 @@ class QuestionManager(models.Manager):
             return None
 
 class Question(models.Model):
-    text = models.TextField()
+    text = models.TextField(unique=True)
     difficulty = models.IntegerField(default=1)
     objects = QuestionManager()
 
