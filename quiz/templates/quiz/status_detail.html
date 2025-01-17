@@ -1,0 +1,27 @@
+{% extends "quiz/base.html" %}
+{% block title %}Status detail{% endblock %}
+
+{% block content %}
+<h1>Status Detail</h1>
+<div id="question-difficulty" class="status-item">
+    <span class="label">Question Difficulty:</span>
+    <span class="value">{{ status.question_difficulty }}</span>
+</div>
+<div id="answer-difficulty" class="status-item">
+    <span class="label">Answer Difficulty:</span>
+    <span class="value">{{ status.answer_difficulty }}</span>
+</div>
+<div id="matches-played" class="status-item">
+    <span class="label">Matches Played:</span>
+    <span class="value">{{ status.matches_played }}</span>
+</div>
+<div id="matches-won" class="status-item">
+    <span class="label">Matches Won:</span>
+    <span class="value">{{ status.matches_won }}</span>
+</div>
+<div id="matches-per-round" class="status-item">
+    <span class="label">Matches Per Round:</span>
+    <span class="value">{{ status.matches_per_round }}</span>
+</div>
+<a href="{% url 'edit_status' status.id %}">Edit</a>
+{% endblock %}

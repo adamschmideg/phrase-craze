@@ -1,9 +1,8 @@
-import random
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.forms.models import model_to_dict
 
-from quiz import models
+from quiz import forms, models
 
 PROMOTE_AT_RATIO = 0.8
 DEMOTE_AT_RATIO = 0.5
@@ -43,4 +42,22 @@ def submit_answer(request, quiz_id, question_id, answer_id):
 
         next_question = models.Question.objects.random_question(status)
         return redirect(reverse('show_question', kwargs={'quiz_id': quiz_id, 'question_id': next_question.id}))
+
+def edit_status(request, user_id):
+    status = get_object_or_404(models.Status, user_id=user_id)
+
+    if request.method == 'POST':
+        form = forms.StatusForm(request.POST, instance=status)
+        if form.is_valid():
+            form.save()
+            return redirect('status_detail', status_id=status.id)
+    else:
+        form = forms.StatusForm(instance=status)
+
+    return render(request, 'quiz/edit_status.html', {'form': form, 'status': status})
+
+def status_detail(request, user_id):
+    status = get_object_or_404(models.Status, user_id=user_id)
+    return render(request, 'quiz/status_detail.html', {'status': status})
+
 

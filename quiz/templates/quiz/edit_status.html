@@ -1,0 +1,13 @@
+{% extends "quiz/base.html" %}
+{% block title %}Edit status{% endblock %}
+
+{% block content %}
+<div>
+<h1>Edit Status</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
+</div>
+{% endblock %}
