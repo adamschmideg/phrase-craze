@@ -15,21 +15,17 @@ class PrepareShowAnswersTest(TestCase):
         question1 = Question.objects.create(text="Question 1", difficulty=1)
         answer1 = Answer.objects.create(question_id=question1.id, text="Answer 1", is_correct=True)
 
-        question2 = Question.objects.create(text="Question 1", difficulty=2)
-        answer2 = Answer.objects.create(question_id=question2.id, text="Answer 1")
+        _ = Question.objects.create(text="Question 1", difficulty=2)
 
         status = Status.objects.get_or_create(self.user)
         status.question_difficulty = 1
         status.matches_per_round = 1
         status.save()
 
-        request = self.factory.get('/')
+        request = self.factory.get('/dummy/')
         request.user = self.user
-        views.prepare_home(request)
-
         request.method = 'POST'
 
-        # Call the prepare function
         quiz_id = 1
         template_name, context = views.prepare_submit_answer(request, quiz_id, question1.id, answer1.id)
 
