@@ -7,10 +7,14 @@ from quiz import forms, models
 PROMOTE_AT_RATIO = 0.8
 DEMOTE_AT_RATIO = 0.5
 
-def home(request):
+def prepare_home(request):
     status = models.Status.objects.get_or_create(request.user)
     question = models.Question.objects.random_question(status)
-    return redirect(reverse('show_question', kwargs={'quiz_id': 0, 'question_id': question.id}))
+    return reverse('show_question', kwargs={'quiz_id': 0, 'question_id': question.id})
+
+def home(request):
+    redirect_to = prepare_home(request)
+    return redirect(redirect_to)
 
 def show_question(request, quiz_id, question_id):
     status = model_to_dict(models.Status.objects.get_or_create(request.user))
@@ -23,7 +27,7 @@ def show_answers(request, quiz_id, question_id, answer_ids):
     answers = models.Answer.objects.filter(id__in=answer_ids.split(','))
     return render(request, 'quiz/answers.html', {'quiz_id': quiz_id, 'question_id': question_id, 'answers': answers})
 
-def submit_answer(request, quiz_id, question_id, answer_id):
+def prepare_submit_answer(request, quiz_id, question_id, answer_id):
     if request.method == 'POST':
         answer = models.Answer.objects.get(id=answer_id)
         status = models.Status.objects.get_or_create(request.user)
@@ -41,7 +45,12 @@ def submit_answer(request, quiz_id, question_id, answer_id):
         status.save()
 
         next_question = models.Question.objects.random_question(status)
-        return redirect(reverse('show_question', kwargs={'quiz_id': quiz_id, 'question_id': next_question.id}))
+        return 'show_question', {'quiz_id': quiz_id, 'question_id': next_question.id}
+
+def submit_answer(request, quiz_id, question_id, answer_id):
+    view_name, context = prepare_submit_answer(request, quiz_id, question_id, answer_id)
+    redirect_to = reverse(view_name, kwargs=context)
+    return redirect(redirect_to)
 
 def edit_status(request, user_id):
     status = get_object_or_404(models.Status, user_id=user_id)

@@ -8,11 +8,11 @@ class QuestionManager(models.Manager):
         try:
             question_count = self.filter(difficulty=status.question_difficulty).count()
             if question_count == 0:
-                return None
+                raise self.model.DoesNotExist(f'No questions found with difficulty {status.question_difficulty}')
             random_index = randint(0, question_count - 1)
             return self.filter(difficulty=status.question_difficulty)[random_index]
         except self.model.DoesNotExist:
-            return None
+            raise self.model.DoesNotExist('No questions found')
 
 class Question(models.Model):
     text = models.TextField(unique=True)
