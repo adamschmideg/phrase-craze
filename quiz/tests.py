@@ -57,4 +57,18 @@ class PrepareShowAnswersTest(TestCase):
         next_question = Question.objects.get(pk=context['question_id'])
         self.assertEqual(next_question.difficulty, question2.difficulty)
 
+    def test_good_answer(self):
+        question = Question.objects.create(text="Question 1", difficulty=1)
+        answer = Answer.objects.create(question_id=question.id, text="Answer 1", is_correct=True)
+        status = Status.objects.get_or_create(self.user)
+        status.question_difficulty = 1
+        status.save()
+        request = self.factory.get('/dummy/')
+        request.user = self.user
+        request.method = 'POST'
 
+        quiz_id = 1
+        _, _ = views.prepare_submit_answer(request, quiz_id, question.id, answer.id)
+        status = Status.objects.get_or_create(self.user)
+        self.assertEqual(status.matches_played, 1)
+        self.assertEqual(status.matches_won, 1)

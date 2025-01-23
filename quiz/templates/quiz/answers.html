@@ -15,7 +15,7 @@
                             name="answer"
                             value="{{ forloop.counter0 }}"
                             formaction="{% url 'submit_answer' quiz_id=quiz_id question_id=question_id answer_id=forloop.counter0 %}">
-                        {{ answer.text }}
+                        {{ answer.text }} ({{answer.is_correct}})
                     </button>
 
                 </li>
