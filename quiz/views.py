@@ -37,9 +37,9 @@ def prepare_submit_answer(request, quiz_id, question_id, answer_id):
             status.matches_won += 1
         if status.matches_played == status.matches_per_round:
             if status.matches_won / status.matches_per_round >= PROMOTE_AT_RATIO:
-                status.increase_difficulty()
+                status.adjust_difficulty(increase=True)
             elif status.matches_won / status.matches_per_round <= DEMOTE_AT_RATIO:
-                status.decrease_difficulty()
+                status.adjust_difficulty(increase=False)
             status.matches_won = 0
             status.matches_played = 0
         status.save()

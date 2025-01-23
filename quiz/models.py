@@ -42,12 +42,22 @@ class Status(models.Model):
     matches_per_round = models.IntegerField(default=2)
     objects = StatusManager()
 
-    def increase_difficulty(self):
-        max_difficulty = Question.objects.aggregate(models.Max('difficulty'))['difficulty__max']
-        if self.question_difficulty < max_difficulty:
-            self.question_difficulty += 1
+    def adjust_difficulty(self, increase=True):
+        # Get all distinct difficulty values
+        difficulties = list(Question.objects.values_list('difficulty', flat=True).distinct())
 
-    def decrease_difficulty(self):
-        min_difficulty = Question.objects.aggregate(models.Min('difficulty'))['difficulty__min']
-        if self.question_difficulty > min_difficulty:
-            self.question_difficulty -= 1
+        # Sort difficulties based on whether we're increasing or decreasing
+        difficulties.sort(reverse=not increase)
+
+        # Find the next difficulty level
+        for difficulty in difficulties:
+            if increase and difficulty > self.question_difficulty:
+                self.question_difficulty = difficulty
+                return
+            if not increase and difficulty < self.question_difficulty:
+                self.question_difficulty = difficulty
+                return
+
+        # If no suitable difficulty is found, don't change the difficulty
+
+

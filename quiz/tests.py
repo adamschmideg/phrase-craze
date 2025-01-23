@@ -42,6 +42,10 @@ class PrepareShowAnswersTest(TestCase):
         status.question_difficulty = 1
         status.matches_per_round = 1
         status.save()
+        status.adjust_difficulty(increase=True)
+        self.assertEqual(status.question_difficulty, question2.difficulty, "Increase difficulty should skip missing difficulties")
+        status.adjust_difficulty(increase=False)
+        self.assertEqual(status.question_difficulty, question1.difficulty, "Decrease difficulty should skip missing difficulties")
 
         request = self.factory.get('/dummy/')
         request.user = self.user
