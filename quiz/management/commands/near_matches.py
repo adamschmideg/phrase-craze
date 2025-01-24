@@ -3,11 +3,28 @@ import random
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from quiz.models import Question, Answer  # Adjust the import based on your actual app structure
-from PyDictionary import PyDictionary
+import nltk
+try:
+    nltk.corpus.wordnet.synsets('test')
+except LookupError:
+    print("WordNet is not installed. Downloading now...")
+    nltk.download('wordnet')
+    nltk.download('omw-1.4')
+    print("WordNet has been successfully downloaded.")
+from nltk.corpus import wordnet
+
+def get_synonyms(word):
+    synonyms = []
+    for synset in wordnet.synsets(word):
+        for lemma in synset.lemmas():
+            synonyms.append(lemma.name())
+    return list(set(synonyms))
+
+word = "small"
+print(f"Synonyms for '{word}': {get_synonyms(word)}")
 
 # Load Dutch language model
 nlp = spacy.load("nl_core_news_sm")
-dictionary = PyDictionary()
 
 # List of common Dutch adverbs
 dutch_adverbs = [
@@ -53,7 +70,7 @@ class Command(BaseCommand):
             if technique == "substitute":
                 for i, token in enumerate(doc):
                     if token.pos_ in ['NOUN', 'VERB', 'ADJ', 'ADV']:
-                        synonyms = dictionary.synonym(token.text)
+                        synonyms = get_synonyms(token.text)
                         if synonyms:
                             new_word = random.choice(synonyms)
                             if new_word != token.text:
@@ -93,3 +110,4 @@ class Command(BaseCommand):
             near_matches.append(near_match)
 
         return near_matches
+
