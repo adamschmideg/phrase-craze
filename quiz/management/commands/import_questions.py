@@ -1,4 +1,5 @@
 import csv
+import string
 from django.core.management.base import BaseCommand
 from quiz.models import Question
 
@@ -15,11 +16,13 @@ class Command(BaseCommand):
             reader = csv.DictReader(file)
             objects_to_create = []
             for row in reader:
-                sentence = row['sentence']
-                words = sentence.split()
+                s = row['sentence']
+                while s and s[-1] in string.punctuation:
+                    s = s[:-1]
+                words = s.split()
                 objects_to_create.append(
                     Question(
-                        text=sentence,
+                        text=s,
                         difficulty=len(words),
                     ))
 
