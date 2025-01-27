@@ -3,25 +3,23 @@ import random
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from quiz.models import Question, Answer  # Adjust the import based on your actual app structure
-import nltk
-try:
-    nltk.corpus.wordnet.synsets('test')
-except LookupError:
-    print("WordNet is not installed. Downloading now...")
-    nltk.download('wordnet')
-    nltk.download('omw-1.4')
-    print("WordNet has been successfully downloaded.")
-from nltk.corpus import wordnet
+import wn
+wn.download('omw-nl:1.4')
+dutch_wn = wn.Wordnet('omw-nl:1.4')
 
-def get_synonyms(word):
-    synonyms = []
-    for synset in wordnet.synsets(word):
+def get_dutch_synonyms(word):
+    synonyms = set()
+    synsets = dutch_wn.synsets(word)
+
+    for synset in synsets:
         for lemma in synset.lemmas():
-            synonyms.append(lemma.name())
-    return list(set(synonyms))
+            if lemma != word:  # Avoid adding the input word itself
+                synonyms.add(lemma)
 
-word = "small"
-print(f"Synonyms for '{word}': {get_synonyms(word)}")
+    return list(synonyms)
+
+word = "man"
+print(f"Synonyms for '{word}': {get_dutch_synonyms(word)}")
 
 # Load Dutch language model
 nlp = spacy.load("nl_core_news_sm")
