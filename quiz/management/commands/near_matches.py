@@ -53,8 +53,6 @@ class Command(BaseCommand):
 
                 Answer.objects.create(question=question, text=question.text, is_correct=True, difficulty=question.difficulty)  # Create correct answer
 
-                self.stdout.write(f'Generated near matches for question: "{question.text}"')
-
     def create_near_matches(self, sentence, num_matches=3):
         doc = nlp(sentence)
         near_matches = []
