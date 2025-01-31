@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.forms.models import model_to_dict
@@ -24,7 +26,8 @@ def show_question(request, quiz_id, question_id):
     return render(request, 'quiz/question.html', {'question': question, 'answers_url': answers_url, 'status': status})
 
 def show_answers(request, quiz_id, question_id, answer_ids):
-    answers = models.Answer.objects.filter(id__in=answer_ids.split(','))
+    answers = list(models.Answer.objects.filter(id__in=answer_ids.split(',')))
+    random.shuffle(answers)
     return render(request, 'quiz/answers.html', {'quiz_id': quiz_id, 'question_id': question_id, 'answers': answers})
 
 def prepare_submit_answer(request, quiz_id, question_id, answer_id):
