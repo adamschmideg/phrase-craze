@@ -68,7 +68,7 @@ class Command(BaseCommand):
             if technique == "substitute":
                 for i, token in enumerate(doc):
                     if token.pos_ in ['NOUN', 'VERB', 'ADJ', 'ADV']:
-                        synonyms = get_synonyms(token.text)
+                        synonyms = get_dutch_synonyms(token.text)
                         if synonyms:
                             new_word = random.choice(synonyms)
                             if new_word != token.text:
