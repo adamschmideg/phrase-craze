@@ -44,14 +44,17 @@ class Command(BaseCommand):
         for i in range(0, len(questions), batch_size):
             batch_questions = questions[i:i + batch_size]
             self.stdout.write(f'Processing batch {i // batch_size + 1}...')
+            bulk_answers = []
 
             for question in batch_questions:
                 near_matches = self.create_near_matches(question.text)
                 for match in near_matches:
                     length = len(match.split())
-                    Answer.objects.create(question=question, text=match, difficulty=length)  # Create new answer
+                    bulk_answers.append(Answer(question=question, text=match, difficulty=length))  # Create new answer
 
-                Answer.objects.create(question=question, text=question.text, is_correct=True, difficulty=question.difficulty)  # Create correct answer
+                bulk_answers.append(Answer(question=question, text=question.text, is_correct=True, difficulty=question.difficulty))  # Create correct answer
+
+            Answer.objects.bulk_create(bulk_answers)
 
     def create_near_matches(self, sentence, num_matches=3):
         doc = nlp(sentence)
