@@ -50,10 +50,10 @@ class Command(BaseCommand):
                 sentence_length = len(question.text.split())
 
                 for length in range(3, sentence_length - 1):
-                    alternative_answers_count = 3
+                    alternative_answers_count = 5
                     for _ in range(alternative_answers_count):
                         subsentence = self.random_subsentence(question.text, length)
-                        near_match = self.create_near_match(question.text, length)
+                        near_match = self.create_near_match(subsentence)
                         sub_length = len(near_match.split())
                         bulk_answers.append(Answer(question=question, text=near_match, difficulty=sub_length))  # Create new answer
 
@@ -68,7 +68,7 @@ class Command(BaseCommand):
         start = random.randint(0, len(words) - length)
         return ' '.join(words[start:start + length])
 
-    def create_near_match(self, sentence, length):
+    def create_near_match(self, sentence):
         doc = nlp(sentence)
 
         words = [token.text for token in doc]
