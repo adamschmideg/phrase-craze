@@ -29,9 +29,12 @@ class StatusManager(models.Manager):
     def get_or_create(self, user):
         user = user if user.is_authenticated else User.objects.get(username='placeholder')
         try:
-            return self.get(user=user)
+            status = self.get(user=user)
         except self.model.DoesNotExist:
-            return self.create(user=user)
+            status = self.create(user=user)
+
+        status.set_lowest_difficulty()
+        return status
 
 class Status(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
@@ -41,6 +44,13 @@ class Status(models.Model):
     matches_won = models.IntegerField(default=0)
     matches_per_round = models.IntegerField(default=2)
     objects = StatusManager()
+
+    def set_lowest_difficulty(self):
+        self.question_difficulty = Question.objects.aggregate(models.Min('difficulty'))['difficulty__min']
+        # find questions with the lowest difficulty
+        questions = Question.objects.filter(difficulty=self.question_difficulty)
+        # find answers with the lowest difficulty that belong to the questions
+        self.answer_difficulty = Answer.objects.filter(question__in=questions).aggregate(models.Min('difficulty'))['difficulty__min']
 
     def adjust_difficulty(self, increase=True):
         # Get all distinct difficulty values
