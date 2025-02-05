@@ -47,66 +47,75 @@ class Command(BaseCommand):
             bulk_answers = []
 
             for question in batch_questions:
-                near_matches = self.create_near_matches(question.text)
-                for match in near_matches:
-                    length = len(match.split())
-                    bulk_answers.append(Answer(question=question, text=match, difficulty=length))  # Create new answer
+                sentence_length = len(question.text.split())
 
-                bulk_answers.append(Answer(question=question, text=question.text, is_correct=True, difficulty=question.difficulty))  # Create correct answer
+                for length in range(3, sentence_length - 1):
+                    alternative_answers_count = 3
+                    for _ in range(alternative_answers_count):
+                        subsentence = self.random_subsentence(question.text, length)
+                        near_match = self.create_near_match(question.text, length)
+                        sub_length = len(near_match.split())
+                        bulk_answers.append(Answer(question=question, text=near_match, difficulty=sub_length))  # Create new answer
+
+                    subsentence = self.random_subsentence(question.text, length)
+                    bulk_answers.append(Answer(question=question, text=subsentence, is_correct=True, difficulty=length))  # Create correct answer
 
             Answer.objects.bulk_create(bulk_answers)
 
-    def create_near_matches(self, sentence, num_matches=3):
+    def random_subsentence(self, sentence, length):
         doc = nlp(sentence)
-        near_matches = []
+        words = [token.text for token in doc]
+        start = random.randint(0, len(words) - length)
+        return ' '.join(words[start:start + length])
 
-        for _ in range(num_matches):
-            words = [token.text for token in doc]
-            original_words = words.copy()  # Keep a copy of the original words
+    def create_near_match(self, sentence, length):
+        doc = nlp(sentence)
 
-            technique = random.choice(["substitute", "reorder", "add_remove"])
+        words = [token.text for token in doc]
+        original_words = words.copy()  # Keep a copy of the original words
 
-            if technique == "substitute":
-                for i, token in enumerate(doc):
-                    if token.pos_ in ['NOUN', 'VERB', 'ADJ', 'ADV']:
-                        synonyms = get_dutch_synonyms(token.text)
-                        if synonyms:
-                            new_word = random.choice(synonyms)
-                            if new_word != token.text:
-                                words[i] = new_word
-                                break
+        technique = random.choice(["substitute", "reorder", "add_remove"])
 
-            elif technique == "reorder":
-                if len(words) > 3:
-                    i, j = random.sample(range(len(words)), 2)
-                    words[i], words[j] = words[j], words[i]
+        if technique == "substitute":
+            for i, token in enumerate(doc):
+                if token.pos_ in ['NOUN', 'VERB', 'ADJ', 'ADV']:
+                    synonyms = get_dutch_synonyms(token.text)
+                    if synonyms:
+                        new_word = random.choice(synonyms)
+                        if new_word != token.text:
+                            words[i] = new_word
+                            break
 
-            else:  # add_remove
-                if random.choice([True, False]) and len(words) > 4:
-                    removable = [i for i, t in enumerate(doc) if t.dep_ not in ['ROOT', 'nsubj', 'aux']]
-                    if removable:
-                        words.pop(random.choice(removable))
-                else:
-                    insert_pos = random.randint(0, len(words))
-                    adverb_to_insert = random.choice(dutch_adverbs)
-                    words.insert(insert_pos, adverb_to_insert)
+        elif technique == "reorder":
+            if len(words) > 3:
+                i, j = random.sample(range(len(words)), 2)
+                words[i], words[j] = words[j], words[i]
+
+        else:  # add_remove
+            if random.choice([True, False]) and len(words) > 4:
+                removable = [i for i, t in enumerate(doc) if t.dep_ not in ['ROOT', 'nsubj', 'aux']]
+                if removable:
+                    words.pop(random.choice(removable))
+            else:
+                insert_pos = random.randint(0, len(words))
+                adverb_to_insert = random.choice(dutch_adverbs)
+                words.insert(insert_pos, adverb_to_insert)
+
+        near_match = ' '.join(words)
+
+        # Ensure the near match is different from the original sentence
+        if near_match.lower() == sentence.lower():
+            if len(words) > 3:
+                i, j = random.sample(range(len(words)), 2)
+                words[i], words[j] = words[j], words[i]
+            else:
+                insert_pos = random.randint(0, len(words))
+                adverb_to_insert = random.choice(dutch_adverbs)
+                words.insert(insert_pos, adverb_to_insert)
 
             near_match = ' '.join(words)
 
-            # Ensure the near match is different from the original sentence
-            if near_match.lower() == sentence.lower():
-                if len(words) > 3:
-                    i, j = random.sample(range(len(words)), 2)
-                    words[i], words[j] = words[j], words[i]
-                else:
-                    insert_pos = random.randint(0, len(words))
-                    adverb_to_insert = random.choice(dutch_adverbs)
-                    words.insert(insert_pos, adverb_to_insert)
+        near_match = near_match[0].upper() + near_match[1:]  # Capitalize first letter
 
-                near_match = ' '.join(words)
-
-            near_match = near_match[0].upper() + near_match[1:]  # Capitalize first letter
-            near_matches.append(near_match)
-
-        return near_matches
+        return near_match
 
