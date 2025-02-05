@@ -19,11 +19,22 @@ def home(request):
     return redirect(redirect_to)
 
 def show_question(request, quiz_id, question_id):
-    status = model_to_dict(models.Status.objects.get_or_create(request.user))
+    status = models.Status.objects.get_or_create(request.user)
+    status_dict = model_to_dict(status)
     question = models.Question.objects.get(id=question_id)
-    answer_ids = ','.join([str(answer.id) for answer in question.answers.all()])
+    answers = question.answers.filter(difficulty=status.answer_difficulty)
+    answers_per_question = 3
+    if len(answers) < answers_per_question:
+        status.answer_difficulty += 1
+        status.save()
+        answers = question.answers.filter(difficulty=status.answer_difficulty)
+    good_answers = list(models.Answer.objects.filter(question=question, is_correct=True))
+    good_answer = random.choice(good_answers)
+    answers = random.sample(list(answers), answers_per_question)
+    answers.append(good_answer)
+    answer_ids = ','.join([str(answer.id) for answer in answers])
     answers_url = reverse('show_answers', kwargs={'quiz_id': quiz_id, 'question_id': question_id, 'answer_ids': answer_ids})
-    return render(request, 'quiz/question.html', {'question': question, 'answers_url': answers_url, 'status': status})
+    return render(request, 'quiz/question.html', {'question': question, 'answers_url': answers_url, 'status': status_dict})
 
 def show_answers(request, quiz_id, question_id, answer_ids):
     answers = list(models.Answer.objects.filter(id__in=answer_ids.split(',')))
